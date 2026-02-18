@@ -1,0 +1,14 @@
+C:\Dev\Clase1\HolaITM\HolaITM\bin\Debug\net10.0\HolaITM.exe
+C:\Dev\Clase1\HolaITM\HolaITM\bin\Debug\net10.0\HolaITM.deps.json
+C:\Dev\Clase1\HolaITM\HolaITM\bin\Debug\net10.0\HolaITM.runtimeconfig.json
+C:\Dev\Clase1\HolaITM\HolaITM\bin\Debug\net10.0\HolaITM.dll
+C:\Dev\Clase1\HolaITM\HolaITM\bin\Debug\net10.0\HolaITM.pdb
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\HolaITM.GeneratedMSBuildEditorConfig.editorconfig
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\HolaITM.AssemblyInfoInputs.cache
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\HolaITM.AssemblyInfo.cs
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\HolaITM.csproj.CoreCompileInputs.cache
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\HolaITM.dll
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\refint\HolaITM.dll
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\HolaITM.pdb
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\HolaITM.genruntimeconfig.cache
+C:\Dev\Clase1\HolaITM\HolaITM\obj\Debug\net10.0\ref\HolaITM.dll

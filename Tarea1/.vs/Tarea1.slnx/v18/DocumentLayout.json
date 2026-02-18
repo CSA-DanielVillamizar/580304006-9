@@ -1,0 +1,61 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Dev\\580304006-9\\Tarea1\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{089100B1-113F-4E66-888A-E83F3999EAFD}|Solution Items{089100B1-113F-4E66-888A-E83F3999EAFD}|C:\\Dev\\580304006-9\\Tarea1\\Nivel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{089100B1-113F-4E66-888A-E83F3999EAFD}|Solution Items{089100B1-113F-4E66-888A-E83F3999EAFD}|solutionrelative:Nivel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2A855EF6-13E9-F707-953E-C4039B3FDC62}|Tarea1\\Tarea1.csproj|c:\\dev\\580304006-9\\tarea1\\tarea1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2A855EF6-13E9-F707-953E-C4039B3FDC62}|Tarea1\\Tarea1.csproj|solutionrelative:tarea1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Nivel.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\Tarea1\\Nivel.cs",
+              "RelativeDocumentMoniker": "Nivel.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\Tarea1\\Nivel.cs",
+              "RelativeToolTip": "Nivel.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABIAAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T12:46:39.738Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\Tarea1\\Tarea1\\Program.cs",
+              "RelativeDocumentMoniker": "Tarea1\\Program.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\Tarea1\\Tarea1\\Program.cs",
+              "RelativeToolTip": "Tarea1\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T12:06:07.901Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
