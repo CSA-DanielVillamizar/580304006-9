@@ -1,4 +1,6 @@
+using GestionITM.Domain.Interfaces;
 using GestionITM.Infrastructure;
+using GestionITM.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,22 +11,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Registrar ApplicationDbContext
-//
-// Opción 1 (por defecto): SQL Server local (localdb)
-//   - Cadena de conexión configurada en appsettings.json bajo "DefaultConnection".
-//   - Se usa UseSqlServer(connectionString).
-//
-// Opción 2 (ejemplo educativo): SQLite
-//   - Cambiar la cadena de conexión en appsettings.json a: "Data Source=GestionITM.db".
-//   - Cambiar UseSqlServer por UseSqlite(connectionString).
-//
-// Esto permite a los estudiantes ver claramente qué cambiar para usar otro proveedor de base de datos.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
+// 1. Configurar la cadena de conexión
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// 2. Registrar el Repositorio (Inyección de Dependencias)
+// AddScoped significa: "Crea una instancia por cada petición HTTP"
+builder.Services.AddScoped<IEstudianteRepository, EstudianteRepository>();
 
 var app = builder.Build();
 
