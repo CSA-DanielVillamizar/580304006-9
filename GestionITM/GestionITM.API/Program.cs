@@ -18,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // 2. Registrar el Repositorio (Inyección de Dependencias)
 // AddScoped significa: "Crea una instancia por cada petición HTTP"
 builder.Services.AddScoped<IEstudianteRepository, EstudianteRepository>();
+builder.Services.AddScoped<ICursoRepository, CursoRepository>();
 
 var app = builder.Build();
 
