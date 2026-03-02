@@ -1,3 +1,5 @@
+using AutoMapper;
+using GestionITM.API.Mappings;
 using GestionITM.Domain.Interfaces;
 using GestionITM.Infrastructure;
 using GestionITM.Infrastructure.Repositories;
@@ -19,6 +21,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // AddScoped significa: "Crea una instancia por cada petición HTTP"
 builder.Services.AddScoped<IEstudianteRepository, EstudianteRepository>();
 builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

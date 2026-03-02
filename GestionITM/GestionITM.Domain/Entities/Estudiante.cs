@@ -15,6 +15,13 @@ namespace GestionITM.Domain.Entities
         [MaxLength(200)]
         public string Correo { get; set; } = string.Empty;
 
-        public DateTime FechaInscripcion { get; set; }
+        public DateTime FechaInscripcion { get; set; } = DateTime.Now;
+
+        // Nuevo campo para el número de teléfono del estudiante
+        // Práctica Migración EFCore
+        [MaxLength(20)]
+        public string Telefono { get; set; } = string.Empty;
+     
+
     }
 }
