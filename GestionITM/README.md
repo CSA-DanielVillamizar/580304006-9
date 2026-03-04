@@ -13,6 +13,105 @@ El objetivo es que el estudiante aprenda a construir paso a paso una API REST mo
 
 ---
 
+## Resumen de clases (para estudiantes)
+
+### Clase 4 – ORM y Persistencia con Entity Framework Core
+
+- Problema: desajuste de impedancia entre Objetos (C#) y Tablas (SQL).
+- EF Core como ORM: traduce clases C# a tablas SQL y viceversa.
+- Enfoque Code First: primero definimos entidades (`Estudiante`), luego usamos migraciones para generar la base de datos.
+- Pasos clave:
+  - Agregar paquetes `Microsoft.EntityFrameworkCore.SqlServer` y `Microsoft.EntityFrameworkCore.Design` en `GestionITM.Infrastructure`.
+  - Definir la entidad `Estudiante` en `GestionITM.Domain.Entities` con data annotations (`[Required]`, `[MaxLength]`).
+  - Crear `ApplicationDbContext` en `GestionITM.Infrastructure` con `DbSet<Estudiante> Estudiantes`.
+  - Ejecutar comandos:
+    ```powershell
+    dotnet ef migrations add InitialCreate --project GestionITM.Infrastructure --startup-project GestionITM.API
+    dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
+    ```
+
+### Clase 5 – Patrón Repositorio e Inyección de Dependencias
+
+- Patrón Repositorio: define un contrato (`IEstudianteRepository`, `ICursoRepository`) que abstrae el acceso a datos.
+- Inyección de dependencias: las clases piden sus dependencias (interfaces) por constructor.
+- Implementamos:
+  - `IEstudianteRepository` en `GestionITM.Domain.Interfaces`.
+  - `EstudianteRepository` en `GestionITM.Infrastructure.Repositories` usando `ApplicationDbContext`.
+- Registro en `GestionITM.API.Program.cs`:
+  ```csharp
+  builder.Services.AddDbContext<ApplicationDbContext>(options =>
+      options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+  builder.Services.AddScoped<IEstudianteRepository, EstudianteRepository>();
+  builder.Services.AddScoped<ICursoRepository, CursoRepository>();
+  ```
+- Todo el acceso a datos pasa por las interfaces, nunca por `new ApplicationDbContext()` directo.
+
+### Clase 6 – Web APIs, Controladores y Swagger
+
+- API como “mesero”: recibe peticiones HTTP, llama a repositorios y devuelve JSON.
+- Creamos `EstudianteController` y `CursoController` en `GestionITM.API.Controllers`.
+- Endpoints base:
+  - `GET /api/estudiante` y `GET /api/estudiante/{id}`.
+  - `POST /api/estudiante`.
+  - `GET /api/curso` y `POST /api/curso`.
+- Probamos la API con Swagger (`/swagger`), sin necesidad de frontend.
+- Controladores inicialmente devolvían entidades (`Estudiante`, `Curso`) directamente.
+
+### Clase 7 – DTOs y AutoMapper
+
+- Problema: no exponer directamente las entidades de base de datos al exterior.
+- Creamos DTOs en `GestionITM.Domain.Dtos`:
+  - `EstudianteDto` (salida).
+  - `EstudianteCreateDto` (entrada para crear).
+- Configuramos AutoMapper en `GestionITM.API.Mappings.MappingProfile`:
+  ```csharp
+  public class MappingProfile : Profile
+  {
+      public MappingProfile()
+      {
+          CreateMap<Estudiante, EstudianteDto>();
+          CreateMap<EstudianteCreateDto, Estudiante>();
+      }
+  }
+  ```
+- Registro en `Program.cs`:
+  ```csharp
+  builder.Services.AddAutoMapper(typeof(MappingProfile));
+  ```
+- Actualizamos `EstudianteController` para usar `IMapper` y devolver `IEnumerable<EstudianteDto>` en lugar de entidades.
+
+### Clase 8 – Migraciones avanzadas y versionamiento de datos
+
+- Migraciones = historial de cambios de la base de datos (como commits de Git).
+- Agregamos propiedades nuevas a `Estudiante` (por ejemplo `Telefono`) y creamos migraciones:
+  ```powershell
+  dotnet ef migrations add AgregarTelefonoEstudiante --project GestionITM.Infrastructure --startup-project GestionITM.API
+  dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
+  ```
+- Entendimos:
+  - Método `Up` agrega columnas/tablas.
+  - Método `Down` revierte los cambios.
+  - Tabla `__EFMigrationsHistory` registra qué migraciones están aplicadas.
+- Vimos comandos para rollback (`dotnet ef database update NombreMigracionAnterior`) y para quitar última migración (`dotnet ef migrations remove`).
+
+### Clase 9 – Capa de Servicios y Lógica de Negocio
+
+- Introducimos la Service Layer para centralizar reglas de negocio.
+- Definimos `IEstudianteService` en `GestionITM.Domain.Interfaces`.
+- Implementamos `EstudianteService` en `GestionITM.Infrastructure.Services`:
+  - Usa `IEstudianteRepository` + `IMapper`.
+  - Aplica reglas de negocio, por ejemplo: solo correos `@correo.itm.edu.co` son válidos.
+  - Asigna `FechaInscripcion = DateTime.UtcNow` al registrar.
+- Registro del servicio en `Program.cs`:
+  ```csharp
+  builder.Services.AddScoped<IEstudianteService, EstudianteService>();
+  ```
+- Actualizamos `EstudianteController` para depender de `IEstudianteService` en lugar del repositorio y del mapper:
+  - El controlador solo orquesta; el servicio se encarga de validaciones, mapeos y llamadas al repositorio.
+
+---
+
 ## 1. Estructura de la solución
 
 Dentro de la carpeta `GestionITM/` hay una solución con tres proyectos principales:
@@ -255,38 +354,11 @@ Archivo: `GestionITM.API/Controllers/EstudianteController.cs`
 
 Ruta base: `/api/estudiante`
 
-Dependencias inyectadas:
+Dependencias inyectadas (versión final Nivel 5):
 
-- `IEstudianteRepository _repository`
-- `IMapper _mapper`
+- `IEstudianteService _service`
 
-#### GET /api/estudiante
-
-Devuelve todos los estudiantes en forma de `EstudianteDto`.
-
-Flujo simplificado:
-
-1. `_repository.ObtenerTodoAsync()` obtiene la lista de `Estudiante` desde la BD.
-2. `_mapper.Map<IEnumerable<EstudianteDto>>(estudiantes)` convierte la lista de entidades a lista de DTOs.
-3. `return Ok(estudiantesDto);` devuelve `200 OK` con la lista.
-
-#### GET /api/estudiante/{id}
-
-Devuelve un estudiante específico.
-
-1. `_repository.ObtenerPorIdAsync(id)` busca por ID.
-2. Si es `null`, se devuelve `404 NotFound` con un mensaje amigable.
-3. Si existe, se mapea con AutoMapper a `EstudianteDto` y se devuelve con `200 OK`.
-
-#### POST /api/estudiante
-
-Crea un nuevo estudiante a partir de un `EstudianteCreateDto`.
-
-1. El body de la petición se deserializa a `EstudianteCreateDto`.
-2. `_mapper.Map<Estudiante>(estudianteCreateDto)` crea la entidad.
-3. `_repository.AgregarAsync(estudiante)` guarda en la base de datos.
-4. Se mapea la entidad guardada a `EstudianteDto`.
-5. Se devuelve `CreatedAtAction(...)` con código `201 Created` y el recurso creado.
+El controlador ya no habla con el repositorio ni con AutoMapper directamente; todo eso vive en el servicio.
 
 ### 9.2. CursoController
 
@@ -298,9 +370,7 @@ Endpoints básicos:
 
 - `GET /api/curso` – devuelve todos los cursos.
 - `GET /api/curso/{id}` – devuelve un curso por ID.
-- `POST /api/curso` – crea un curso nuevo usando `ICursoRepository`.
-
-Ejercicio sugerido: crear DTOs para curso y usar AutoMapper, igual que con `Estudiante`.
+- `POST /api/curso` – crea un curso nuevo usando `ICursoRepository` (pendiente de actualizar a DTOs + servicios, como ejercicio).
 
 ---
 
