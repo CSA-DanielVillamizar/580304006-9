@@ -1,31 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using GestionITM.Domain.Interfaces;
-using GestionITM.Domain.Entities;
 using GestionITM.Domain.Dtos;
+
 
 namespace GestionITM.API.Controllers
 {
-    [Route("api/[controller]")] // La ruta sera: api/estudiante
+    [Route("api/[controller]")]
     [ApiController]
     public class EstudianteController : ControllerBase
     {
-        private readonly IEstudianteRepository _repository;
-        private readonly IMapper _mapper;
+        // 1. Solo dependemos de la Interfaz del Servicio
+        private readonly IEstudianteService _service;
 
-        public EstudianteController(IEstudianteRepository repository, IMapper mapper)
+        // 2. El constructor ahora es mucho más limpio
+        public EstudianteController(IEstudianteService service)
         {
-            _repository = repository;
-            _mapper = mapper;
+            _service = service;
         }
 
         // GET: api/estudiante
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EstudianteDto>>> Get()
         {
-            var estudiantes = await _repository.ObtenerTodoAsync();
-            // Transformación automática de Lista de Entidades a Lista de DTOs
-            var estudiantesDto = _mapper.Map<IEnumerable<EstudianteDto>>(estudiantes);
+            // El servicio ya nos devuelve los DTOs mapeados
+            var estudiantesDto = await _service.ObtenerTodosLosEstudiantesAsync();
             return Ok(estudiantesDto);
         }
 
@@ -33,13 +31,15 @@ namespace GestionITM.API.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<EstudianteDto>> Get(int id)
         {
-            var estudiante = await _repository.ObtenerPorIdAsync(id);
-            if (estudiante == null)
+            // Nota: Aquí podrías agregar lógica en el Servicio para manejar el Null
+            // o mapearlo aquí si el servicio devuelve la entidad (pero mejor en el servicio)
+            var estudianteDto = await _service.ObtenerPorIdAsync(id);
+
+            if (estudianteDto == null)
             {
                 return NotFound(new { message = $"Estudiante con ID {id} no encontrado." });
             }
 
-            var estudianteDto = _mapper.Map<EstudianteDto>(estudiante);
             return Ok(estudianteDto);
         }
 
@@ -47,15 +47,17 @@ namespace GestionITM.API.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] EstudianteCreateDto estudianteCreateDto)
         {
-            var estudiante = _mapper.Map<Estudiante>(estudianteCreateDto);
-            await _repository.AgregarAsync(estudiante);
+            // 3. El servicio valida la lógica (como el correo @itm) y guarda
+            var resultado = await _service.RegistrarEstudianteAsync(estudianteCreateDto);
 
-            var estudianteDto = _mapper.Map<EstudianteDto>(estudiante);
+            if (!resultado)
+            {
+                return BadRequest("No se pudo registrar. Verifique que el correo sea institucional (@correo.itm.edu.co).");
+            }
 
-            return CreatedAtAction(
-                nameof(Get),
-                new { id = estudiante.Id },
-                estudianteDto);
+            // En un flujo Nivel 5 real, el servicio podría devolver el objeto creado 
+            // para usar CreatedAtAction, pero por ahora lo mantenemos simple:
+            return Ok(new { message = "Estudiante registrado con éxito en el sistema del ITM." });
         }
     }
 }
