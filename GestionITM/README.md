@@ -13,237 +13,40 @@ El objetivo es que el estudiante aprenda a construir paso a paso una API REST mo
 
 ---
 
-## Resumen de clases (para estudiantes)
-
-### Clase 4 – ORM y Persistencia con Entity Framework Core
-
-- Problema: desajuste de impedancia entre Objetos (C#) y Tablas (SQL).
-- EF Core como ORM: traduce clases C# a tablas SQL y viceversa.
-- Enfoque Code First: primero definimos entidades (`Estudiante`), luego usamos migraciones para generar la base de datos.
-- Pasos clave:
-  - Agregar paquetes `Microsoft.EntityFrameworkCore.SqlServer` y `Microsoft.EntityFrameworkCore.Design` en `GestionITM.Infrastructure`.
-  - Definir la entidad `Estudiante` en `GestionITM.Domain.Entities` con data annotations (`[Required]`, `[MaxLength]`).
-  - Crear `ApplicationDbContext` en `GestionITM.Infrastructure` con `DbSet<Estudiante> Estudiantes`.
-  - Ejecutar comandos:
-    ```powershell
-    dotnet ef migrations add InitialCreate --project GestionITM.Infrastructure --startup-project GestionITM.API
-    dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
-    ```
-
-### Clase 5 – Patrón Repositorio e Inyección de Dependencias
-
-- Patrón Repositorio: define un contrato (`IEstudianteRepository`, `ICursoRepository`) que abstrae el acceso a datos.
-- Inyección de dependencias: las clases piden sus dependencias (interfaces) por constructor.
-- Implementamos:
-  - `IEstudianteRepository` en `GestionITM.Domain.Interfaces`.
-  - `EstudianteRepository` en `GestionITM.Infrastructure.Repositories` usando `ApplicationDbContext`.
-- Registro en `GestionITM.API.Program.cs`:
-  ```csharp
-  builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-  builder.Services.AddScoped<IEstudianteRepository, EstudianteRepository>();
-  builder.Services.AddScoped<ICursoRepository, CursoRepository>();
-  ```
-- Todo el acceso a datos pasa por las interfaces, nunca por `new ApplicationDbContext()` directo.
-
-### Clase 6 – Web APIs, Controladores y Swagger
-
-- API como “mesero”: recibe peticiones HTTP, llama a repositorios y devuelve JSON.
-- Creamos `EstudianteController` y `CursoController` en `GestionITM.API.Controllers`.
-- Endpoints base:
-  - `GET /api/estudiante` y `GET /api/estudiante/{id}`.
-  - `POST /api/estudiante`.
-  - `GET /api/curso` y `POST /api/curso`.
-- Probamos la API con Swagger (`/swagger`), sin necesidad de frontend.
-- Controladores inicialmente devolvían entidades (`Estudiante`, `Curso`) directamente.
-
-### Clase 7 – DTOs y AutoMapper
-
-- Problema: no exponer directamente las entidades de base de datos al exterior.
-- Creamos DTOs en `GestionITM.Domain.Dtos`:
-  - `EstudianteDto` (salida).
-  - `EstudianteCreateDto` (entrada para crear).
-- Configuramos AutoMapper en `GestionITM.API.Mappings.MappingProfile`:
-  ```csharp
-  public class MappingProfile : Profile
-  {
-      public MappingProfile()
-      {
-          CreateMap<Estudiante, EstudianteDto>();
-          CreateMap<EstudianteCreateDto, Estudiante>();
-      }
-  }
-  ```
-- Registro en `Program.cs`:
-  ```csharp
-  builder.Services.AddAutoMapper(typeof(MappingProfile));
-  ```
-- Actualizamos `EstudianteController` para usar `IMapper` y devolver `IEnumerable<EstudianteDto>` en lugar de entidades.
-
-### Clase 8 – Migraciones avanzadas y versionamiento de datos
-
-- Migraciones = historial de cambios de la base de datos (como commits de Git).
-- Agregamos propiedades nuevas a `Estudiante` (por ejemplo `Telefono`) y creamos migraciones:
-  ```powershell
-  dotnet ef migrations add AgregarTelefonoEstudiante --project GestionITM.Infrastructure --startup-project GestionITM.API
-  dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
-  ```
-- Entendimos:
-  - Método `Up` agrega columnas/tablas.
-  - Método `Down` revierte los cambios.
-  - Tabla `__EFMigrationsHistory` registra qué migraciones están aplicadas.
-- Vimos comandos para rollback (`dotnet ef database update NombreMigracionAnterior`) y para quitar última migración (`dotnet ef migrations remove`).
-
-### Clase 9 – Capa de Servicios y Lógica de Negocio
-
-- Introducimos la Service Layer para centralizar reglas de negocio.
-- Definimos `IEstudianteService` en `GestionITM.Domain.Interfaces`.
-- Implementamos `EstudianteService` en `GestionITM.Infrastructure.Services`:
-  - Usa `IEstudianteRepository` + `IMapper`.
-  - Aplica reglas de negocio, por ejemplo: solo correos `@correo.itm.edu.co` son válidos.
-  - Asigna `FechaInscripcion = DateTime.UtcNow` al registrar.
-- Registro del servicio en `Program.cs`:
-  ```csharp
-  builder.Services.AddScoped<IEstudianteService, EstudianteService>();
-  ```
-- Actualizamos `EstudianteController` para depender de `IEstudianteService` en lugar del repositorio y del mapper:
-  - El controlador solo orquesta; el servicio se encarga de validaciones, mapeos y llamadas al repositorio.
-
-### Clase 10 – Manejo Global de Excepciones con Middleware
-
-- Problema: la API puede lanzar excepciones que muestran errores técnicos al usuario (mensajes de SQL, stack trace, etc.).
-- Objetivo: capturar los errores en un solo lugar y devolver siempre una respuesta JSON estandarizada (`ErrorResponse`).
-- Creamos en `GestionITM.Domain.Models` el modelo:
-
-```csharp
-public class ErrorResponse
-{
-    public int StatusCode { get; set; }
-    public string Message { get; set; } = string.Empty;
-    public string? Details { get; set; } // Solo para desarrollo
-}
-```
-
-- Creamos el middleware `ExceptionMiddleware` en `GestionITM.API/Middleware` (capa API, no Infrastructure):
-
-```csharp
-public class ExceptionMiddleware
-{
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionMiddleware> _logger;
-    private readonly IHostEnvironment _env;
-
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
-    {
-        _next = next;
-        _logger = logger;
-        _env = env;
-    }
-
-    public async Task InvokeAsync(HttpContext context)
-    {
-        try
-        {
-            await _next(context);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            await HandleExceptionAsync(context, ex);
-        }
-    }
-
-    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
-    {
-        context.Response.ContentType = "application/json";
-
-        // Determinar el código de estado según el tipo de excepción
-        var statusCode = ex switch
-        {
-            KeyNotFoundException => (int)HttpStatusCode.NotFound,
-            ArgumentException     => (int)HttpStatusCode.BadRequest,
-            _                     => (int)HttpStatusCode.InternalServerError
-        };
-        context.Response.StatusCode = statusCode;
-
-        var response = new ErrorResponse
-        {
-            StatusCode = statusCode,
-            Message = statusCode switch
-            {
-                (int)HttpStatusCode.NotFound => "El recurso solicitado no fue encontrado en el sistema del ITM.",
-                (int)HttpStatusCode.BadRequest => "La petición enviada no es válida. Verifique los datos.",
-                _ => "Ocurrió un error interno en el servidor del ITM."
-            },
-            Details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null
-        };
-
-        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        var json = JsonSerializer.Serialize(response, options);
-
-        await context.Response.WriteAsync(json);
-    }
-}
-```
-
-- Lo registramos en `GestionITM.API/Program.cs` al inicio del pipeline:
-
-```csharp
-var app = builder.Build();
-
-// --- ACTIVAR EL ESCUDO DE PROTECCIÓN ---
-app.UseMiddleware<ExceptionMiddleware>();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.MapControllers();
-app.Run();
-```
-- Reto aplicado:
-  - `KeyNotFoundException` → devuelve 404.
-  - `ArgumentException` → devuelve 400.
-  - Cualquier otra excepción → 500.
-- Beneficio: quitamos `try-catch` repetidos de los controladores y centralizamos el manejo de errores en un solo punto.
-
----
-
 ## 1. Estructura de la solución
 
 Dentro de la carpeta `GestionITM/` hay una solución con tres proyectos principales:
 
 - `GestionITM.API/`
-  - Proyecto ASP.NET Core Web API.
-  - Expone endpoints REST como:
-    - `/api/estudiante`
-    - `/api/curso`
-  - Configura Swagger, EF Core, AutoMapper e inyección de dependencias.
+  - Proyecto ASP.NET Core Web API (capa de presentación).
+  - Contiene:
+    - Controladores (por ejemplo, `EstudianteController`, `CursoController`) que dependen de servicios de dominio (`IEstudianteService`).
+    - Middleware global de excepciones (`ExceptionMiddleware`) que unifica el formato de errores.
+    - Configuración de Swagger, pipeline HTTP y enrutamiento.
+    - Registro de dependencias (DbContext, repositorios, servicios, AutoMapper) en `Program.cs`.
 
 - `GestionITM.Domain/`
-  - Entidades de dominio (modelo de datos):
-    - `Estudiante`
-    - `Curso`
-    - `Matricula`
-    - `Product`
-  - Interfaces de repositorio:
-    - `IEstudianteRepository`
-    - `ICursoRepository`
-  - DTOs:
-    - `EstudianteDto`
-    - `EstudianteCreateDto`
+  - Núcleo de dominio (modelo y contratos):
+    - Entidades de dominio (modelo de datos):
+      - `Estudiante`, `Curso`, `Matricula`, `Product`.
+    - Interfaces de repositorio:
+      - `IEstudianteRepository`, `ICursoRepository`.
+    - Interfaces de servicio:
+      - `IEstudianteService` (reglas de negocio para estudiantes).
+    - DTOs y modelos compartidos:
+      - `EstudianteDto`, `EstudianteCreateDto`.
+      - `ErrorResponse` (formato estándar de respuesta de error para la API).
 
 - `GestionITM.Infrastructure/`
-  - `ApplicationDbContext`: DbContext de EF Core.
-  - Repositorios concretos que implementan las interfaces de `Domain`.
-  - Migraciones de EF Core (carpeta `Migrations`).
+  - Infraestructura de acceso a datos:
+    - `ApplicationDbContext`: DbContext de EF Core.
+    - Repositorios concretos que implementan las interfaces de `Domain` (por ejemplo, `EstudianteRepository`, `CursoRepository`).
+    - Implementaciones de servicios que usan repositorios y AutoMapper (por ejemplo, `EstudianteService`).
+    - Migraciones de EF Core (carpeta `Migrations`).
 
 Arquitectura por capas clásica:
 
-`API (Controllers) -> Domain (Entidades + Interfaces) -> Infrastructure (EF Core + Repositorios)`
+`API (Controllers + Middleware) -> Domain (Entidades + Interfaces + DTOs) -> Infrastructure (EF Core + Repositorios + Services)`
 
 ---
 
@@ -454,11 +257,38 @@ Archivo: `GestionITM.API/Controllers/EstudianteController.cs`
 
 Ruta base: `/api/estudiante`
 
-Dependencias inyectadas (versión final Nivel 5):
+Dependencias inyectadas:
 
-- `IEstudianteService _service`
+- `IEstudianteRepository _repository`
+- `IMapper _mapper`
 
-El controlador ya no habla con el repositorio ni con AutoMapper directamente; todo eso vive en el servicio.
+#### GET /api/estudiante
+
+Devuelve todos los estudiantes en forma de `EstudianteDto`.
+
+Flujo simplificado:
+
+1. `_repository.ObtenerTodoAsync()` obtiene la lista de `Estudiante` desde la BD.
+2. `_mapper.Map<IEnumerable<EstudianteDto>>(estudiantes)` convierte la lista de entidades a lista de DTOs.
+3. `return Ok(estudiantesDto);` devuelve `200 OK` con la lista.
+
+#### GET /api/estudiante/{id}
+
+Devuelve un estudiante específico.
+
+1. `_repository.ObtenerPorIdAsync(id)` busca por ID.
+2. Si es `null`, se devuelve `404 NotFound` con un mensaje amigable.
+3. Si existe, se mapea con AutoMapper a `EstudianteDto` y se devuelve con `200 OK`.
+
+#### POST /api/estudiante
+
+Crea un nuevo estudiante a partir de un `EstudianteCreateDto`.
+
+1. El body de la petición se deserializa a `EstudianteCreateDto`.
+2. `_mapper.Map<Estudiante>(estudianteCreateDto)` crea la entidad.
+3. `_repository.AgregarAsync(estudiante)` guarda en la base de datos.
+4. Se mapea la entidad guardada a `EstudianteDto`.
+5. Se devuelve `CreatedAtAction(...)` con código `201 Created` y el recurso creado.
 
 ### 9.2. CursoController
 
@@ -470,7 +300,9 @@ Endpoints básicos:
 
 - `GET /api/curso` – devuelve todos los cursos.
 - `GET /api/curso/{id}` – devuelve un curso por ID.
-- `POST /api/curso` – crea un curso nuevo usando `ICursoRepository` (pendiente de actualizar a DTOs + servicios, como ejercicio).
+- `POST /api/curso` – crea un curso nuevo usando `ICursoRepository`.
+
+Ejercicio sugerido: crear DTOs para curso y usar AutoMapper, igual que con `Estudiante`.
 
 ---
 
@@ -605,190 +437,3 @@ Luego, `GET /api/curso` debe mostrar estos tres cursos almacenados en SQL Server
 - Escribir pruebas unitarias para repositorios y controladores.
 
 Este proyecto está pensado como una base para practicar desarrollo backend moderno con .NET 8 y EF Core, siguiendo buenas prácticas y una arquitectura por capas clara.
-
----
-
-## 13. Cómo funciona una migración de EF Core (paso a paso)
-
-### 13.1. ¿Qué es una migración?
-
-Una **migración** es un archivo de código C# generado por EF Core que describe un cambio en el esquema de la base de datos:
-
-- Se guarda en la carpeta `GestionITM.Infrastructure/Migrations`.
-- Tiene dos métodos principales:
-  - `Up`: aplica el cambio (por ejemplo, crear una tabla o agregar una columna).
-  - `Down`: revierte el cambio (por ejemplo, borrar la tabla o quitar la columna).
-
-EF Core mantiene un **historial** de qué migraciones ya se aplicaron en la base de datos (tabla interna `__EFMigrationsHistory`).
-
-### 13.2. Ejemplo real: migración `AgregarTelefonoEstudiante`
-
-Cuando agregamos la propiedad `Telefono` a la entidad `Estudiante`:
-
-1. Cambiamos la clase `Estudiante`:
-
-```csharp
-public class Estudiante
-{
-    public int Id { get; set; }
-    public string Nombre { get; set; } = string.Empty;
-    public string Correo { get; set; } = string.Empty;
-    public DateTime FechaInscripcion { get; set; }
-
-    // Nueva propiedad
-    public string Telefono { get; set; } = string.Empty;
-}
-```
-
-2. Creamos la migración:
-
-```powershell
-dotnet ef migrations add AgregarTelefonoEstudiante --project GestionITM.Infrastructure --startup-project GestionITM.API
-```
-
-3. EF Core generó un archivo `20260302120518_AgregarTelefonoEstudiante.cs` similar a:
-
-```csharp
-protected override void Up(MigrationBuilder migrationBuilder)
-{
-    migrationBuilder.AddColumn<string>(
-        name: "Telefono",
-        table: "Estudiantes",
-        type: "nvarchar(20)",
-        maxLength: 20,
-        nullable: false,
-        defaultValue: "");
-}
-
-protected override void Down(MigrationBuilder migrationBuilder)
-{
-    migrationBuilder.DropColumn(
-        name: "Telefono",
-        table: "Estudiantes");
-}
-```
-
-- `Up` → agrega la columna `Telefono` a la tabla `Estudiantes`.
-- `Down` → la quita si se revierte la migración.
-
-4. Aplicamos la migración a la base de datos:
-
-```powershell
-dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
-```
-
-Después de este comando:
-
-- La tabla `Estudiantes` en SQL Server tiene una nueva columna `Telefono`.
-- La tabla `__EFMigrationsHistory` registra que `AgregarTelefonoEstudiante` está aplicada.
-
-### 13.3. Resumen del ciclo de trabajo con migraciones
-
-1. **Modificar el modelo** (por ejemplo, agregar una propiedad a una entidad).
-2. **Crear migración**:
-
-```powershell
-dotnet ef migrations add NombreDeLaMigracion --project GestionITM.Infrastructure --startup-project GestionITM.API
-```
-
-3. **Revisar la migración generada** (archivos en `Infrastructure/Migrations`).
-4. **Aplicar migración**:
-
-```powershell
-dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
-```
-
-5. (Opcional) Verificar en SQL Server Management Studio que el cambio existe en la base de datos.
-
----
-
-## 14. Conceptos clave explicados para el estudiante
-
-### 14.1. Entidad (Entity)
-
-Es una **clase de C#** que representa un concepto del mundo real dentro del dominio de la aplicación.
-
-Ejemplo: `Estudiante`, `Curso`, `Matricula`.
-
-Características:
-
-- Se mapea a una **tabla** de la base de datos (por EF Core).
-- Cada instancia suele tener una **clave primaria** (`Id`).
-
-### 14.2. DTO (Data Transfer Object)
-
-Es una clase que se usa para **transportar datos** hacia o desde la API, sin exponer directamente toda la entidad.
-
-Ejemplos:
-
-- `EstudianteDto` → lo que la API devuelve al cliente.
-- `EstudianteCreateDto` → lo que la API recibe en un POST.
-
-Motivación:
-
-- Controlar qué campos se exponen.
-- Separar el modelo de dominio del contrato de la API.
-
-### 14.3. Repositorio
-
-Patrón que encapsula la lógica de **acceso a datos**:
-
-- Define operaciones como `ObtenerTodoAsync`, `ObtenerPorIdAsync`, `AgregarAsync`.
-- Oculta los detalles de EF Core a las capas superiores.
-
-En este proyecto:
-
-- Interfaces en `GestionITM.Domain/Interfaces`.
-- Implementaciones en `GestionITM.Infrastructure/Repositories`.
-
-### 14.4. DbContext
-
-`ApplicationDbContext` es la clase que:
-
-- Representa la **sesión con la base de datos**.
-- Expone `DbSet<T>` para cada entidad (`DbSet<Estudiante>`, `DbSet<Curso>`, etc.).
-- Sabe cómo generar el modelo y las migraciones.
-
-EF Core lo usa para:
-
-- Traducir operaciones LINQ a SQL.
-- Guardar cambios (`SaveChangesAsync`).
-
-### 14.5. Migración
-
-Archivo C# que describe un **cambio incremental** en el esquema de la base de datos:
-
-- Se crea con `dotnet ef migrations add ...`.
-- Tiene métodos `Up` y `Down`.
-- EF Core aplica las migraciones en orden con `dotnet ef database update`.
-
-Ventajas:
-
-- Puedes versionar la base de datos igual que versionas el código.
-- Puedes reproducir el mismo esquema en diferentes entornos (desarrollo, prueba, producción).
-
-### 14.6. AutoMapper
-
-Librería que automatiza la **conversión entre tipos** (por ejemplo, entre entidad y DTO):
-
-- Configuración en `MappingProfile` con `CreateMap<Origen, Destino>()`.
-- Uso en controladores: `_mapper.Map<Destino>(origen)`.
-
-En este proyecto:
-
-- `CreateMap<Estudiante, EstudianteDto>();`
-- `CreateMap<EstudianteCreateDto, Estudiante>();`
-
-### 14.7. Controller y Endpoint
-
-- **Controller**: clase de ASP.NET Core que maneja **peticiones HTTP**.
-- Ejemplo: `EstudianteController`.
-- **Endpoint**: método público del controlador decorado con atributos como `[HttpGet]`, `[HttpPost]`, etc.
-- Ejemplo: `GET /api/estudiante`, `POST /api/estudiante`.
-
-Flujo típico:
-
-1. El cliente hace una petición HTTP (GET/POST/PUT/DELETE).
-2. ASP.NET Core la enruta al método del controlador correspondiente.
-3. El controlador usa repositorios y AutoMapper para procesar la petición.
-4. El controlador devuelve una respuesta con código de estado (200, 201, 404, etc.) y datos (normalmente DTOs).
