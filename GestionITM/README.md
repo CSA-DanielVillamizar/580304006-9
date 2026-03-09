@@ -110,6 +110,106 @@ El objetivo es que el estudiante aprenda a construir paso a paso una API REST mo
 - Actualizamos `EstudianteController` para depender de `IEstudianteService` en lugar del repositorio y del mapper:
   - El controlador solo orquesta; el servicio se encarga de validaciones, mapeos y llamadas al repositorio.
 
+### Clase 10 – Manejo Global de Excepciones con Middleware
+
+- Problema: la API puede lanzar excepciones que muestran errores técnicos al usuario (mensajes de SQL, stack trace, etc.).
+- Objetivo: capturar los errores en un solo lugar y devolver siempre una respuesta JSON estandarizada (`ErrorResponse`).
+- Creamos en `GestionITM.Domain.Models` el modelo:
+
+```csharp
+public class ErrorResponse
+{
+    public int StatusCode { get; set; }
+    public string Message { get; set; } = string.Empty;
+    public string? Details { get; set; } // Solo para desarrollo
+}
+```
+
+- Creamos el middleware `ExceptionMiddleware` en `GestionITM.API/Middleware` (capa API, no Infrastructure):
+
+```csharp
+public class ExceptionMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
+    private readonly IHostEnvironment _env;
+
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+    {
+        _next = next;
+        _logger = logger;
+        _env = env;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
+        {
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            await HandleExceptionAsync(context, ex);
+        }
+    }
+
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+    {
+        context.Response.ContentType = "application/json";
+
+        // Determinar el código de estado según el tipo de excepción
+        var statusCode = ex switch
+        {
+            KeyNotFoundException => (int)HttpStatusCode.NotFound,
+            ArgumentException     => (int)HttpStatusCode.BadRequest,
+            _                     => (int)HttpStatusCode.InternalServerError
+        };
+        context.Response.StatusCode = statusCode;
+
+        var response = new ErrorResponse
+        {
+            StatusCode = statusCode,
+            Message = statusCode switch
+            {
+                (int)HttpStatusCode.NotFound => "El recurso solicitado no fue encontrado en el sistema del ITM.",
+                (int)HttpStatusCode.BadRequest => "La petición enviada no es válida. Verifique los datos.",
+                _ => "Ocurrió un error interno en el servidor del ITM."
+            },
+            Details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null
+        };
+
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var json = JsonSerializer.Serialize(response, options);
+
+        await context.Response.WriteAsync(json);
+    }
+}
+```
+
+- Lo registramos en `GestionITM.API/Program.cs` al inicio del pipeline:
+
+```csharp
+var app = builder.Build();
+
+// --- ACTIVAR EL ESCUDO DE PROTECCIÓN ---
+app.UseMiddleware<ExceptionMiddleware>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapControllers();
+app.Run();
+```
+- Reto aplicado:
+  - `KeyNotFoundException` → devuelve 404.
+  - `ArgumentException` → devuelve 400.
+  - Cualquier otra excepción → 500.
+- Beneficio: quitamos `try-catch` repetidos de los controladores y centralizamos el manejo de errores en un solo punto.
+
 ---
 
 ## 1. Estructura de la solución
