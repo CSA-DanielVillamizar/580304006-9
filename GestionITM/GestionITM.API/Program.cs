@@ -2,6 +2,7 @@ using AutoMapper;
 using GestionITM.API.Mappings;
 using GestionITM.Domain.Interfaces;
 using GestionITM.Infrastructure;
+using GestionITM.Infrastructure.Middleware;
 using GestionITM.Infrastructure.Repositories;
 using GestionITM.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,8 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
