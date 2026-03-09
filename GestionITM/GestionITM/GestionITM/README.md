@@ -92,7 +92,7 @@ Ajusta:
 - `Database=` con el nombre que quieras usar (por defecto `GestionITM`).
 - `User Id` y `Password` con tus credenciales.
 
-En `Program.cs` se registra el DbContext con esta cadena de conexión:\r
+En `Program.cs` se registra el DbContext con esta cadena de conexión:
 
 ```csharp
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -438,187 +438,166 @@ Este proyecto está pensado como una base para practicar desarrollo backend mode
 
 ---
 
-## 13. Cómo funciona una migración de EF Core (paso a paso)
+## 13. Clase 10: Manejo Global de Excepciones con Middleware
 
-### 13.1. ¿Qué es una migración?
+**Fecha:** Miércoles, 11 de Marzo de 2026.
 
-Una **migración** es un archivo de código C# generado por EF Core que describe un cambio en el esquema de la base de datos:
+**Objetivo:** Implementar un componente centralizado que capture cualquier error en la aplicación y devuelva una respuesta JSON estandarizada y elegante al cliente.
 
-- Se guarda en la carpeta `GestionITM.Infrastructure/Migrations`.
-- Tiene dos métodos principales:
-  - `Up`: aplica el cambio (por ejemplo, crear una tabla o agregar una columna).
-  - `Down`: revierte el cambio (por ejemplo, borrar la tabla o quitar la columna).
+### 13.1. Metáfora del "Seguro de Accidentes" del Software
 
-EF Core mantiene un **historial** de qué migraciones ya se aplicaron en la base de datos (tabla interna `__EFMigrationsHistory`).
+> "Imaginen que nuestra API es un Edificio Inteligente.
+>
+> - Nivel 1: Si hay un incendio en un apartamento (un error en el código), el apartamento se quema y el humo se esparce por todo el edificio, asustando a los vecinos (el usuario ve el error técnico de SQL).
+> - Nivel 5: Instalamos un Sistema de Aspersores y Alarmas Centralizado (Middleware).
+>
+> No importa en qué piso o habitación ocurra el incendio; el sistema lo detecta, lo contiene, y le avisa a todo el edificio de forma calmada: 'Hubo un inconveniente en el piso 5, estamos trabajando en ello'.
+>
+> El Middleware es ese guardia que está en la puerta y revisa todo lo que entra y todo lo que sale. Si algo sale 'roto', él lo atrapa, lo arregla y lo entrega bonito."
 
-### 13.2. Ejemplo real: migración `AgregarTelefonoEstudiante`
+### 13.2. Definición técnica
 
-Cuando agregamos la propiedad `Telefono` a la entidad `Estudiante`:
+- **Middleware:** componente de software que se ensambla en el *pipeline* (tubería) de la aplicación para manejar peticiones y respuestas.
+- **Pipeline:** el camino que recorre una petición desde que el cliente hace clic hasta que llega al controlador, y de regreso.
+- **Global Exception Handling:** técnica para capturar errores en un solo lugar, evitandoping `try-catch` repetitivos en todos los controladores.
 
-1. Cambiamos la clase `Estudiante`:
+### 13.3. Paso 1: Modelo de respuesta (`ErrorResponse`)
 
-```csharp
-public class Estudiante
-{
-    public int Id { get; set; }
-    public string Nombre { get; set; } = string.Empty;
-    public string Correo { get; set; } = string.Empty;
-    public DateTime FechaInscripcion { get; set; }
-
-    // Nueva propiedad
-    public string Telefono { get; set; } = string.Empty;
-}
-```
-
-2. Creamos la migración:
-
-```powershell
-dotnet ef migrations add AgregarTelefonoEstudiante --project GestionITM.Infrastructure --startup-project GestionITM.API
-```
-
-3. EF Core generó un archivo `20260302120518_AgregarTelefonoEstudiante.cs` similar a:
+Archivo: `GestionITM.Domain/Models/ErrorResponse.cs`
 
 ```csharp
-protected override void Up(MigrationBuilder migrationBuilder)
+namespace GestionITM.Domain.Models
 {
-    migrationBuilder.AddColumn<string>(
-        name: "Telefono",
-        table: "Estudiantes",
-        type: "nvarchar(20)",
-        maxLength: 20,
-        nullable: false,
-        defaultValue: "");
-}
-
-protected override void Down(MigrationBuilder migrationBuilder)
-{
-    migrationBuilder.DropColumn(
-        name: "Telefono",
-        table: "Estudiantes");
+    public class ErrorResponse
+    {
+        public int StatusCode { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public string? Details { get; set; } // Solo para desarrollo
+    }
 }
 ```
 
-- `Up` → agrega la columna `Telefono` a la tabla `Estudiantes`.
-- `Down` → la quita si se revierte la migración.
+### 13.4. Paso 2: Middleware de excepciones (`ExceptionMiddleware`)
 
-4. Aplicamos la migración a la base de datos:
+Archivo: `GestionITM.API/Middleware/ExceptionMiddleware.cs`
 
-```powershell
-dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
+Versión base vista en clase (antes de aplicar el reto):
+
+```csharp
+public class ExceptionMiddleware
+{
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
+    private readonly IHostEnvironment _env;
+
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)
+    {
+        _next = next; // El siguiente paso en la tubería
+        _logger = logger;
+        _env = env;
+    }
+
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
+        {
+            await _next(context); // Intentar seguir el flujo normal
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message); // Guardar el error en el log
+            await HandleExceptionAsync(context, ex);
+        }
+    }
+
+    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+    {
+        context.Response.ContentType = "application/json";
+        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+        var response = new ErrorResponse
+        {
+            StatusCode = context.Response.StatusCode,
+            Message = "Ocurrió un error interno en el servidor del ITM.",
+            Details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null
+        };
+
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        var json = JsonSerializer.Serialize(response, options);
+
+        await context.Response.WriteAsync(json);
+    }
+}
 ```
 
-Después de este comando:
+> Nota: originalmente se enseñó en `Infrastructure`, pero en la versión final vive en `GestionITM.API` porque depende directamente de ASP.NET Core (`HttpContext`, `RequestDelegate`, etc.).
 
-- La tabla `Estudiantes` en SQL Server tiene una nueva columna `Telefono`.
-- La tabla `__EFMigrationsHistory` registra que `AgregarTelefonoEstudiante` está aplicada.
+### 13.5. Paso 3: Registrar el Middleware en `Program.cs`
 
-### 13.3. Resumen del ciclo de trabajo con migraciones
+Archivo: `GestionITM.API/Program.cs`
 
-1. **Modificar el modelo** (por ejemplo, agregar una propiedad a una entidad).
-2. **Crear migración**:
+```csharp
+var app = builder.Build();
 
-```powershell
-dotnet ef migrations add NombreDeLaMigracion --project GestionITM.Infrastructure --startup-project GestionITM.API
+// --- ACTIVAR EL ESCUDO DE PROTECCIÓN ---
+app.UseMiddleware<ExceptionMiddleware>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapControllers();
+
+app.Run();
 ```
 
-3. **Revisar la migración generada** (archivos en `Infrastructure/Migrations`).
-4. **Aplicar migración**:
+El orden es vital: el middleware de excepciones debe ir al inicio de la configuración del pipeline para poder atrapar cualquier error posterior.
 
-```powershell
-dotnet ef database update --project GestionITM.Infrastructure --startup-project GestionITM.API
+### 13.6. Reto aplicado: personalizar el StatusCode
+
+Trabajo independiente propuesto:
+
+- Si el error es de tipo `KeyNotFoundException`, devolver un **404 Not Found** en lugar de un 500.
+- Usar un `switch` para detectar diferentes tipos de excepciones.
+
+Implementación final (resumen) del método `HandleExceptionAsync`:
+
+```csharp
+private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+{
+    context.Response.ContentType = "application/json";
+
+    // ANTES: siempre devolvíamos 500 para cualquier excepción
+    //   context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+    // AHORA: determinamos el código según el tipo de excepción
+    var statusCode = ex switch
+    {
+        KeyNotFoundException => (int)HttpStatusCode.NotFound,
+        ArgumentException => (int)HttpStatusCode.BadRequest,
+        _ => (int)HttpStatusCode.InternalServerError
+    };
+    context.Response.StatusCode = statusCode;
+
+    var response = new ErrorResponse
+    {
+        StatusCode = statusCode,
+        Message = statusCode switch
+        {
+            (int)HttpStatusCode.NotFound => "El recurso solicitado no fue encontrado en el sistema del ITM.",
+            (int)HttpStatusCode.BadRequest => "La petición enviada no es válida. Verifique los datos.",
+            _ => "Ocurrió un error interno en el servidor del ITM."
+        },
+        Details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null
+    };
+
+    var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    var json = JsonSerializer.Serialize(response, options);
+
+    await context.Response.WriteAsync(json);
+}
 ```
 
-5. (Opcional) Verificar en SQL Server Management Studio que el cambio existe en la base de datos.
-
----
-
-## 14. Conceptos clave explicados para el estudiante
-
-### 14.1. Entidad (Entity)
-
-Es una **clase de C#** que representa un concepto del mundo real dentro del dominio de la aplicación.
-
-Ejemplo: `Estudiante`, `Curso`, `Matricula`.
-
-Características:
-
-- Se mapea a una **tabla** de la base de datos (por EF Core).
-- Cada instancia suele tener una **clave primaria** (`Id`).
-
-### 14.2. DTO (Data Transfer Object)
-
-Es una clase que se usa para **transportar datos** hacia o desde la API, sin exponer directamente toda la entidad.
-
-Ejemplos:
-
-- `EstudianteDto` → lo que la API devuelve al cliente.
-- `EstudianteCreateDto` → lo que la API recibe en un POST.
-
-Motivación:
-
-- Controlar qué campos se exponen.
-- Separar el modelo de dominio del contrato de la API.
-
-### 14.3. Repositorio
-
-Patrón que encapsula la lógica de **acceso a datos**:
-
-- Define operaciones como `ObtenerTodoAsync`, `ObtenerPorIdAsync`, `AgregarAsync`.
-- Oculta los detalles de EF Core a las capas superiores.
-
-En este proyecto:
-
-- Interfaces en `GestionITM.Domain/Interfaces`.
-- Implementaciones en `GestionITM.Infrastructure/Repositories`.
-
-### 14.4. DbContext
-
-`ApplicationDbContext` es la clase que:
-
-- Representa la **sesión con la base de datos**.
-- Expone `DbSet<T>` para cada entidad (`DbSet<Estudiante>`, `DbSet<Curso>`, etc.).
-- Sabe cómo generar el modelo y las migraciones.
-
-EF Core lo usa para:
-
-- Traducir operaciones LINQ a SQL.
-- Guardar cambios (`SaveChangesAsync`).
-
-### 14.5. Migración
-
-Archivo C# que describe un **cambio incremental** en el esquema de la base de datos:
-
-- Se crea con `dotnet ef migrations add ...`.
-- Tiene métodos `Up` y `Down`.
-- EF Core aplica las migraciones en orden con `dotnet ef database update`.
-
-Ventajas:
-
-- Puedes versionar la base de datos igual que versionas el código.
-- Puedes reproducir el mismo esquema en diferentes entornos (desarrollo, prueba, producción).
-
-### 14.6. AutoMapper
-
-Librería que automatiza la **conversión entre tipos** (por ejemplo, entre entidad y DTO):
-
-- Configuración en `MappingProfile` con `CreateMap<Origen, Destino>()`.
-- Uso en controladores: `_mapper.Map<Destino>(origen)`.
-
-En este proyecto:
-
-- `CreateMap<Estudiante, EstudianteDto>();`
-- `CreateMap<EstudianteCreateDto, Estudiante>();`
-
-### 14.7. Controller y Endpoint
-
-- **Controller**: clase de ASP.NET Core que maneja **peticiones HTTP**.
-- Ejemplo: `EstudianteController`.
-- **Endpoint**: método público del controlador decorado con atributos como `[HttpGet]`, `[HttpPost]`, etc.
-- Ejemplo: `GET /api/estudiante`, `POST /api/estudiante`.
-
-Flujo típico:
-
-1. El cliente hace una petición HTTP (GET/POST/PUT/DELETE).
-2. ASP.NET Core la enruta al método del controlador correspondiente.
-3. El controlador usa repositorios y AutoMapper para procesar la petición.
-4. El controlador devuelve una respuesta con código de estado (200, 201, 404, etc.) y datos (normalmente DTOs).
+> Error común (Nivel 1): poner `try-catch` en cada método de cada controlador. Con el middleware global, centralizamos el manejo de errores y mantenemos los controladores limpios y enfocados en la lógica de negocio.

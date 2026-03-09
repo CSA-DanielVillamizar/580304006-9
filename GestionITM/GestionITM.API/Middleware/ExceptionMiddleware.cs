@@ -7,6 +7,11 @@ using GestionITM.Domain.Models;
 
 namespace GestionITM.API.Middleware
 {
+    // Nota pedagógica:
+    // Este middleware vive en la capa API porque:
+    // - Trabaja directamente con HttpContext, RequestDelegate y el pipeline HTTP de ASP.NET Core.
+    // - Forma parte de la capa de presentación: se encarga de cómo respondemos al cliente (status codes, JSON de error).
+    // La capa Infrastructure se enfoca en acceso a datos (DbContext, repositorios) y no debería depender de ASP.NET Core.
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
