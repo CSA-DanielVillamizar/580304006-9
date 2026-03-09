@@ -37,6 +37,16 @@ namespace GestionITM.API.Middleware
         {
             context.Response.ContentType = "application/json";
 
+            // ANTES EN CLASE: siempre devolvíamos 500 para cualquier excepción
+            //   context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            //   var response = new ErrorResponse
+            //   {
+            //       StatusCode = context.Response.StatusCode,
+            //       Message = "Ocurrió un error interno en el servidor del ITM.",
+            //       Details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : null
+            //   };
+            // RETO: ahora usamos un switch para personalizar el StatusCode según el tipo de excepción
+
             // Determinar el código de estado según el tipo de excepción
             var statusCode = ex switch
             {
