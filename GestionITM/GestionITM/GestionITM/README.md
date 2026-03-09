@@ -18,33 +18,35 @@ El objetivo es que el estudiante aprenda a construir paso a paso una API REST mo
 Dentro de la carpeta `GestionITM/` hay una solución con tres proyectos principales:
 
 - `GestionITM.API/`
-  - Proyecto ASP.NET Core Web API.
-  - Expone endpoints REST como:
-    - `/api/estudiante`
-    - `/api/curso`
-  - Configura Swagger, EF Core, AutoMapper e inyección de dependencias.
+  - Proyecto ASP.NET Core Web API (capa de presentación).
+  - Contiene:
+    - Controladores (por ejemplo, `EstudianteController`, `CursoController`) que dependen de servicios de dominio (`IEstudianteService`).
+    - Middleware global de excepciones (`ExceptionMiddleware`) que unifica el formato de errores.
+    - Configuración de Swagger, pipeline HTTP y enrutamiento.
+    - Registro de dependencias (DbContext, repositorios, servicios, AutoMapper) en `Program.cs`.
 
 - `GestionITM.Domain/`
-  - Entidades de dominio (modelo de datos):
-    - `Estudiante`
-    - `Curso`
-    - `Matricula`
-    - `Product`
-  - Interfaces de repositorio:
-    - `IEstudianteRepository`
-    - `ICursoRepository`
-  - DTOs:
-    - `EstudianteDto`
-    - `EstudianteCreateDto`
+  - Núcleo de dominio (modelo y contratos):
+    - Entidades de dominio (modelo de datos):
+      - `Estudiante`, `Curso`, `Matricula`, `Product`.
+    - Interfaces de repositorio:
+      - `IEstudianteRepository`, `ICursoRepository`.
+    - Interfaces de servicio:
+      - `IEstudianteService` (reglas de negocio para estudiantes).
+    - DTOs y modelos compartidos:
+      - `EstudianteDto`, `EstudianteCreateDto`.
+      - `ErrorResponse` (formato estándar de respuesta de error para la API).
 
 - `GestionITM.Infrastructure/`
-  - `ApplicationDbContext`: DbContext de EF Core.
-  - Repositorios concretos que implementan las interfaces de `Domain`.
-  - Migraciones de EF Core (carpeta `Migrations`).
+  - Infraestructura de acceso a datos:
+    - `ApplicationDbContext`: DbContext de EF Core.
+    - Repositorios concretos que implementan las interfaces de `Domain` (por ejemplo, `EstudianteRepository`, `CursoRepository`).
+    - Implementaciones de servicios que usan repositorios y AutoMapper (por ejemplo, `EstudianteService`).
+    - Migraciones de EF Core (carpeta `Migrations`).
 
 Arquitectura por capas clásica:
 
-`API (Controllers) -> Domain (Entidades + Interfaces) -> Infrastructure (EF Core + Repositorios)`
+`API (Controllers + Middleware) -> Domain (Entidades + Interfaces + DTOs) -> Infrastructure (EF Core + Repositorios + Services)`
 
 ---
 
