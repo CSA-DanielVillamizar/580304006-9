@@ -21,6 +21,7 @@ builder.Services.AddSwaggerGen();
 // 1. Configurar la cadena de conexión
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Configuración de JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -33,6 +34,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
+            // Nota docente: este warning (CS8604) aparece porque builder.Configuration["Jwt:Key"]
+            // podría ser null y Encoding.UTF8.GetBytes no acepta null.
+            // Una forma correcta de resolverlo sería:
+            //
+            // var jwtKey = builder.Configuration["Jwt:Key"];
+            // if (string.IsNullOrWhiteSpace(jwtKey))
+            // {
+            //     throw new InvalidOperationException("Jwt:Key no está configurado en appsettings.json o en las variables de entorno.");
+            // }
+            // IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+            //
+            // Es mejor que usar el operador ! (null-forgiving), porque así el sistema falla
+            // de forma clara al arrancar cuando falta la configuración.
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
     });
