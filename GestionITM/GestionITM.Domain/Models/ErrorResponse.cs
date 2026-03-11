@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace GestionITM.Domain.Models
 {
-    internal class ErrorResponse
+    public class ErrorResponse
     {
+        public int StatusCode { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public string? Details { get; set; }// solo se llena en desarrollo para no exponer detalles en producción
     }
 }

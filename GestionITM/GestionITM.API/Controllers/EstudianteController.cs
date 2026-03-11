@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using GestionITM.Domain.Interfaces;
 using GestionITM.Domain.Dtos;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionITM.API.Controllers
 {
+    [Authorize] // El Candado: Nadie entra a este controlador sin un token válido
     [Route("api/[controller]")]
     [ApiController]
     public class EstudianteController : ControllerBase
