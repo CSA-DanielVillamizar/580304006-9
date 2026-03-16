@@ -437,3 +437,30 @@ Luego, `GET /api/curso` debe mostrar estos tres cursos almacenados en SQL Server
 - Escribir pruebas unitarias para repositorios y controladores.
 
 Este proyecto está pensado como una base para practicar desarrollo backend moderno con .NET 8 y EF Core, siguiendo buenas prácticas y una arquitectura por capas clara.
+
+---
+
+# 13. Entrega Taller: Módulo de Profesores (Nivel 5)
+
+Este módulo se a implementado siguiendo los estándares de Clean Architecture definidos en el proyecto, cumpliendo con el ciclo de vida completo de la entidad `Profesor`.
+
+## Detalles de Implementación
+- **Capa de Dominio:** Creación de la entidad `Profesor`, interfaces `IProfesorRepository` e `IProfesorService`, y DTOs (`ProfesorDto`, `ProfesorCreateDto`).
+- **Capa de Infraestructura:** Implementación de repositorios con EF Core 8 y servicios de aplicación con lógica de negocio.
+- **Capa API:** Controlador `ProfesorController` con inyección de dependencias y Middleware de excepciones.
+
+##Evidencias de Desarrollo
+
+### A. Persistencia (SQL Server)
+Se generó la migración `AddProfesorTable` y se aplicó a la base de datos local. La estructura cumple con todos los tipos de datos y restricciones solicitadas.
+>![SQL Server](./evidencias/sql.png)
+
+### B. Ejecución Exitosa (Swagger)
+Prueba del endpoint `POST /api/Profesor`. El sistema procesa el DTO, lo mapea a la entidad y responde con un mensaje de éxito.
+>![Swagger Exito](./evidencias/swagger.png)
+
+### C. Reto de Robustez (Middleware de Excepciones)
+Se validó el Email único. Al intentar registrar un correo ya existente, el Middleware Global captura la excepción y devuelve un JSON estandarizado con código 500.
+>![Error Middleware](./evidencias/error.png)
+
+---
