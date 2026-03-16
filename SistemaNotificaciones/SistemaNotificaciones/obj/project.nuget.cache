@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "XHzT9FYA90Y=",
+  "success": true,
+  "projectFilePath": "C:\\580304006-9\\SistemaNotificaciones\\SistemaNotificaciones\\SistemaNotificaciones.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\DanielVillamizar\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.23\\microsoft.windowsdesktop.app.ref.8.0.23.nupkg.sha512",
+    "C:\\Users\\DanielVillamizar\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.23\\microsoft.netcore.app.ref.8.0.23.nupkg.sha512",
+    "C:\\Users\\DanielVillamizar\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.23\\microsoft.aspnetcore.app.ref.8.0.23.nupkg.sha512",
+    "C:\\Users\\DanielVillamizar\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.23\\microsoft.netcore.app.host.win-x64.8.0.23.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,15 @@
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\bin\Debug\net8.0\SistemaNotificaciones.exe
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\bin\Debug\net8.0\SistemaNotificaciones.deps.json
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\bin\Debug\net8.0\SistemaNotificaciones.runtimeconfig.json
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\bin\Debug\net8.0\SistemaNotificaciones.dll
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\bin\Debug\net8.0\SistemaNotificaciones.pdb
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.GeneratedMSBuildEditorConfig.editorconfig
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.AssemblyInfoInputs.cache
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.AssemblyInfo.cs
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.csproj.CoreCompileInputs.cache
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.sourcelink.json
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.dll
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\refint\SistemaNotificaciones.dll
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.pdb
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\SistemaNotificaciones.genruntimeconfig.cache
+C:\580304006-9\SistemaNotificaciones\SistemaNotificaciones\obj\Debug\net8.0\ref\SistemaNotificaciones.dll

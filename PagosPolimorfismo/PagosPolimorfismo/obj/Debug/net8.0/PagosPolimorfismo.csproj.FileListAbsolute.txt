@@ -1,0 +1,15 @@
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\bin\Debug\net8.0\PagosPolimorfismo.exe
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\bin\Debug\net8.0\PagosPolimorfismo.deps.json
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\bin\Debug\net8.0\PagosPolimorfismo.runtimeconfig.json
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\bin\Debug\net8.0\PagosPolimorfismo.dll
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\bin\Debug\net8.0\PagosPolimorfismo.pdb
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.GeneratedMSBuildEditorConfig.editorconfig
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.AssemblyInfoInputs.cache
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.AssemblyInfo.cs
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.csproj.CoreCompileInputs.cache
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.sourcelink.json
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.dll
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\refint\PagosPolimorfismo.dll
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.pdb
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\PagosPolimorfismo.genruntimeconfig.cache
+C:\Dev\580304006-9\PagosPolimorfismo\PagosPolimorfismo\obj\Debug\net8.0\ref\PagosPolimorfismo.dll

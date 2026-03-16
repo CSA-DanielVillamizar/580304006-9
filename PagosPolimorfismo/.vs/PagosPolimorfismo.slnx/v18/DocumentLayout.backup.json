@@ -1,0 +1,168 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|c:\\dev\\580304006-9\\pagospolimorfismo\\pagospolimorfismo\\ipagoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|solutionrelative:pagospolimorfismo\\ipagoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|c:\\dev\\580304006-9\\pagospolimorfismo\\pagospolimorfismo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|solutionrelative:pagospolimorfismo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|c:\\dev\\580304006-9\\pagospolimorfismo\\pagospolimorfismo\\pagobitcoin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|solutionrelative:pagospolimorfismo\\pagobitcoin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|c:\\dev\\580304006-9\\pagospolimorfismo\\pagospolimorfismo\\pagoefectivo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|solutionrelative:pagospolimorfismo\\pagoefectivo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|c:\\dev\\580304006-9\\pagospolimorfismo\\pagospolimorfismo\\procesadordepedidos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|solutionrelative:pagospolimorfismo\\procesadordepedidos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Dev\\580304006-9\\PagosPolimorfismo\\README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:README.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|c:\\dev\\580304006-9\\pagospolimorfismo\\pagospolimorfismo\\pagotarjetacredito.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|solutionrelative:pagospolimorfismo\\pagotarjetacredito.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|c:\\dev\\580304006-9\\pagospolimorfismo\\pagospolimorfismo\\pagonequi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0BDFC016-1927-6742-616A-7F8FF276DEFF}|PagosPolimorfismo\\PagosPolimorfismo.csproj|solutionrelative:pagospolimorfismo\\pagonequi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PagoBitcoin.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoBitcoin.cs",
+              "RelativeDocumentMoniker": "PagosPolimorfismo\\PagoBitcoin.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoBitcoin.cs",
+              "RelativeToolTip": "PagosPolimorfismo\\PagoBitcoin.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T12:03:07.889Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "README.md",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\README.md",
+              "RelativeDocumentMoniker": "README.md",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\README.md",
+              "RelativeToolTip": "README.md",
+              "ViewState": "AgIAACUAAAAAAAAAAAAAAC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
+              "WhenOpened": "2026-02-18T11:18:07.354Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ProcesadorDePedidos.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\ProcesadorDePedidos.cs",
+              "RelativeDocumentMoniker": "PagosPolimorfismo\\ProcesadorDePedidos.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\ProcesadorDePedidos.cs",
+              "RelativeToolTip": "PagosPolimorfismo\\ProcesadorDePedidos.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAA5wBUAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T13:09:23.994Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "IPagoService.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\IPagoService.cs",
+              "RelativeDocumentMoniker": "PagosPolimorfismo\\IPagoService.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\IPagoService.cs",
+              "RelativeToolTip": "PagosPolimorfismo\\IPagoService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T13:07:59.267Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\Program.cs",
+              "RelativeDocumentMoniker": "PagosPolimorfismo\\Program.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\Program.cs",
+              "RelativeToolTip": "PagosPolimorfismo\\Program.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAgwBsAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T12:35:14.126Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PagoEfectivo.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoEfectivo.cs",
+              "RelativeDocumentMoniker": "PagosPolimorfismo\\PagoEfectivo.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoEfectivo.cs",
+              "RelativeToolTip": "PagosPolimorfismo\\PagoEfectivo.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T12:59:10.964Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "PagoNequi.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoNequi.cs",
+              "RelativeDocumentMoniker": "PagosPolimorfismo\\PagoNequi.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoNequi.cs",
+              "RelativeToolTip": "PagosPolimorfismo\\PagoNequi.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAQwAcAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T13:00:28.711Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PagoTarjetaCredito.cs",
+              "DocumentMoniker": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoTarjetaCredito.cs",
+              "RelativeDocumentMoniker": "PagosPolimorfismo\\PagoTarjetaCredito.cs",
+              "ToolTip": "C:\\Dev\\580304006-9\\PagosPolimorfismo\\PagosPolimorfismo\\PagoTarjetaCredito.cs",
+              "RelativeToolTip": "PagosPolimorfismo\\PagoTarjetaCredito.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAcAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-16T12:51:51.271Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
