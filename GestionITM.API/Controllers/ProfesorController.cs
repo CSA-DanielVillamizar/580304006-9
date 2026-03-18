@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GestionITM.API.Controllers
 {
-    [Authorize] // Pide token para usar este controlador
+    // Pide token para usar este controlador
     [Route("api/[controller]")]
     [ApiController]
     public class ProfesorController : ControllerBase

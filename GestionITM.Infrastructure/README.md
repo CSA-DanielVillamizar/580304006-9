@@ -30,3 +30,4 @@ Proyecto de biblioteca de clases (.NET 8) para la infraestructura de la aplicaci
 
 - Agregar contexto de base de datos y configuraciones (por ejemplo, `DbContext` de EF Core).
 - Implementar repositorios concretos para las entidades de dominio.
+Modulo profesores implementado

@@ -29,18 +29,25 @@ namespace GestionITM.Infrastructure.Services
 
         public async Task<bool> RegistrarProfesorAsync(ProfesorCreateDto profesorDto)
         {
+            // Reto de robustez: lanza excepción si el Nombre es "Error"
+            if (profesorDto.Nombre.Equals("Error", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Error de prueba para el middleware");
+            }
+
+            // Regla de negocio: Especialidad no puede estar vacía
             if (string.IsNullOrWhiteSpace(profesorDto.Especialidad))
             {
                 return false;
             }
 
+            // Regla de negocio: log si especialidad es "Arquitectura"
             if (profesorDto.Especialidad.Trim().Equals("Arquitectura", StringComparison.OrdinalIgnoreCase))
             {
                 Console.WriteLine("Perfil Senior Detectado");
             }
 
             var profesor = _mapper.Map<Profesor>(profesorDto);
-
             await _repository.AgregarAsync(profesor);
             return true;
         }
