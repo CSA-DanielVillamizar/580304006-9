@@ -31,3 +31,13 @@ Proyecto de biblioteca de clases (.NET 8) para la infraestructura de la aplicaci
 - Agregar contexto de base de datos y configuraciones (por ejemplo, `DbContext` de EF Core).
 - Implementar repositorios concretos para las entidades de dominio.
 Modulo profesores implementado
+
+## Evidencias del taller - Modulo Profesores 
+### Tabla Profesores en SQL Server
+![Base de Datos SQL](BaseDatosSQL.png)
+
+### POST exitoso en Swagger
+![Respuesta 200 Swagger](Respuesta200Swagger.png)
+
+### Middleware capturando el error
+![Respuesta 500 Swagger](Respuesta500Swagger.png)

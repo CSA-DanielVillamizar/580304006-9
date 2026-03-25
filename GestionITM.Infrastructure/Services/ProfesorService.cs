@@ -51,5 +51,16 @@ namespace GestionITM.Infrastructure.Services
             await _repository.AgregarAsync(profesor);
             return true;
         }
+        public async Task<ProfesorDto> ObtenerProfesorPorIdAsync(int id)
+        {
+            var profesor = await _repository.ObtenerPorIdAsync(id);
+
+            if (profesor == null)
+            {
+                throw new KeyNotFoundException($"No se encontró un profesor con el ID {id}.");
+            }
+
+            return _mapper.Map<ProfesorDto>(profesor);
+        }
     }
 }

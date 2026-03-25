@@ -42,5 +42,12 @@ namespace GestionITM.API.Controllers
 
             return Ok(new { message = "Profesor registrado con éxito en el sistema del ITM." });
         }
+        // GET: api/profesor/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProfesorDto>> GetById(int id)
+        {
+            var profesorDto = await _service.ObtenerProfesorPorIdAsync(id);
+            return Ok(profesorDto);
+        }
     }
 }

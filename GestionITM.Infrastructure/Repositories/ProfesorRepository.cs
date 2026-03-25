@@ -35,5 +35,9 @@ namespace GestionITM.Infrastructure.Repositories
             // Guarda los cambios en la base de datos
             await _context.SaveChangesAsync();
         }
+        public async Task<Profesor?> ObtenerPorIdAsync(int id)
+        {
+            return await _context.Profesores.FindAsync(id);
+        }
     }
 }
