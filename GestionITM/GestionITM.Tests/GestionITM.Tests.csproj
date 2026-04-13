@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GestionITM.API\GestionITM.API.csproj" />
     <ProjectReference Include="..\GestionITM.Domain\GestionITM.Domain.csproj" />
+    <ProjectReference Include="..\GestionITM.Infrastructure\GestionITM.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
