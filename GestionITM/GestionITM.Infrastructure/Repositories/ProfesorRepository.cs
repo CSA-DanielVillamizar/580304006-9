@@ -23,5 +23,11 @@ namespace GestionITM.Infrastructure.Repositories
             await _context.Profesores.AddAsync(profesor);
             await _context.SaveChangesAsync();
         }
+
+        // Nivel 5: devolvemos IQueryable para permitir filtros y paginación eficientes en SQL Server
+        public IQueryable<Profesor> ConsultarTodo()
+        {
+            return _context.Profesores.AsQueryable();
+        }
     }
 }
