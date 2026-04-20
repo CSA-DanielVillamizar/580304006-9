@@ -8,7 +8,10 @@ using GestionITM.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.OpenApi.Models;// Para la configuración de swagger 
+using System.Text; // Para Encoding.UTF8.GetBytes
+using System.Reflection; // Necesaqrio para Assembly.GetExecutingAssembly() en SwaggerGen
+using System.IO; // Necesario para Path.Combine en SwaggerGen
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +19,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "GestionITM API",
+        Version = "v1"
+    });
+
+    //INSTRUCCIÓN NUEVA
+    // Localice el archivo xml generado en la carpeta de binario (bin) después de compilar el proyecto. El nombre del archivo suele ser el mismo que el nombre del proyecto, seguido de .xml (por ejemplo, GestionITM.API.xml).
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+    // Le dice a Swagger que incluya los comentarios XML para mejorar la documentación de la API. Esto es especialmente útil para describir los endpoints, parámetros y respuestas.
+    c.IncludeXmlComments(xmlPath);
+});
 
 // 1. Configurar la cadena de conexión
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
