@@ -15,6 +15,9 @@ using System.IO; // Necesario para Path.Combine en SwaggerGen
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Ocultar warnings de DataProtection porque la API usa JWT, no Cookies
+builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection", LogLevel.Error);
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers();
@@ -84,10 +87,26 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 
+// Nivel Dios: Aplicar migraciones pendientes automáticamente al arrancar
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al aplicar la migración de la base de datos.");
+    }
+}
+
 // Configure the HTTP request pipeline. ESCUDO DE EXCEPCIONES GLOBAL
 app.UseMiddleware<ExceptionMiddleware>();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
