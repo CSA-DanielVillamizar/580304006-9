@@ -3,7 +3,9 @@ using GestionITM.Domain.Dtos;
 using GestionITM.Domain.Entities;
 using GestionITM.Domain.Interfaces;
 using GestionITM.Domain.Models; // Para el PagedResult
-using Microsoft.EntityFrameworkCore; // Crucial para TolistAsync y CountAsync
+using Microsoft.EntityFrameworkCore;
+using Microsoft .Extensions.Logging;
+using System.Runtime.CompilerServices; // Para ILogger en el futuro si se desea agregar logging específico en el servicio
 
 
 namespace GestionITM.Infrastructure.Services
@@ -11,12 +13,15 @@ namespace GestionITM.Infrastructure.Services
     public class ProfesorService : IProfesorService
     {
         private readonly IProfesorRepository _repository;
+        private readonly ILogger<ProfesorService> _logger; // Para logging específico del servicio
         private readonly IMapper _mapper;
 
-        public ProfesorService(IProfesorRepository repository, IMapper mapper)
+        public ProfesorService(IProfesorRepository repository, IMapper mapper, ILogger<ProfesorService> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger;
+        
         }
 
         // 1. OBTENER TODO (Sin paginación - para uso administrativo interno)
@@ -67,10 +72,17 @@ namespace GestionITM.Infrastructure.Services
         // 3. Registrar profesor (reglas de negocio)
         public async Task<bool> RegistrarProfesorAsync(ProfesorCreateDto profesorCreateDto)
         {
+            // LOG ESTRUCTURADO: Loguear el intento de registro con detalles relevantes (sin exponer datos sensibles)
+            _logger.LogInformation("Iniciando registro de profesor. Email proporcionado: {EmailProfesor}", profesorCreateDto.Email);
+
+         
+
             // Regla de negocio: la Especialidad no puede ser vacía
             if (string.IsNullOrWhiteSpace(profesorCreateDto.Especialidad))
             {
-                return false;
+                // Nivel Warning para reglas de negocio no cumplidas
+                _logger.LogWarning("Intento de registro fallido. Especialidad vacía para {NombreProfesor}", profesorCreateDto.Nombre);
+                throw new Exception("Especialidad vacía");
             }
 
             // Regla de negocio adicional: si la especialidad es "Arquitectura",
@@ -86,11 +98,22 @@ namespace GestionITM.Infrastructure.Services
                 throw new Exception("Error de prueba");
             }
 
-            var profesor = _mapper.Map<Profesor>(profesorCreateDto);
-            profesor.FechaContratacion = DateTime.UtcNow;
+            try
+            {
+                var profesor = _mapper.Map<Profesor>(profesorCreateDto);
+                profesor.FechaContratacion = DateTime.UtcNow;
 
-            await _repository.AgregarAsync(profesor);
-            return true;
+                await _repository.AgregarAsync(profesor);
+
+                _logger.LogInformation("Profesor {NombreProfesor} registrado exitosamente.", profesorCreateDto.Nombre);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Pasamos la excepción completa como primer parámetro para guardar el StackTrace
+                _logger.LogError(ex, "Error crítico de base de datos al guardar a {NombreProfesor}.", profesorCreateDto.Nombre);
+                throw; 
+            }
         }
     }
 }
