@@ -12,10 +12,24 @@ using Microsoft.OpenApi.Models;// Para la configuración de swagger
 using System.Text; // Para Encoding.UTF8.GetBytes
 using System.Reflection; // Necesaqrio para Assembly.GetExecutingAssembly() en SwaggerGen
 using System.IO; // Necesario para Path.Combine en SwaggerGen
+using Serilog; // Para la configuración de logging con Serilog
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Ocultar warnings de DataProtection porque la API usa JWT, no Cookies
+// 1. Logger temporal (bootstrap logger) para capturar logs durante el arranque de la aplicación, antes de que el host esté completamente configurado.
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
+
+try
+{
+    Log.Information("Arrancando el servidor GestionITM API...");
+
+    // 2. Le decimos a ASPNET que use Serilog y lea toda la configuración del JSON (appsettings.json) para configurar Serilog, incluyendo los sinks, niveles de log, etc.
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+                     .ReadFrom.Configuration(context.Configuration)
+                     .ReadFrom.Services(services)
+                     .Enrich.FromLogContext());
 builder.Logging.AddFilter("Microsoft.AspNetCore.DataProtection", LogLevel.Error);
 
 // Add services to the container.
@@ -103,6 +117,10 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// 3. Mildleware mágico Nivel 5:  Registra los códigos HTTP 200, 400, 404, 500 aotomaticamente 
+
+app.UseSerilogRequestLogging(); // Middleware de Serilog para registrar las solicitudes HTTP y sus respuestas, incluyendo los códigos de estado. Esto es útil para monitorear el tráfico y detectar errores.
+
 // Configure the HTTP request pipeline. ESCUDO DE EXCEPCIONES GLOBAL
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -111,10 +129,20 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-// Bloque de activación de autenticación y autorización
-app.UseAuthentication();
-app.UseAuthorization();
+    // Bloque de activación de autenticación y autorización
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-app.MapControllers();
+    app.MapControllers();
 
-app.Run();
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Fallo catastrófico al iniciar la API.");
+}
+finally
+{
+    Log.Information("Apagando la API de forma segura.");
+    Log.CloseAndFlush(); // Asegura que el archivo de texto no quede bloqueado
+}
