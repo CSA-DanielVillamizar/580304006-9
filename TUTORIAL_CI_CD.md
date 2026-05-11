@@ -1,4 +1,4 @@
-# 🚀 Guía de Integración y Despliegue Continuo (CI/CD)
+﻿# 🚀 Guía de Integración y Despliegue Continuo (CI/CD)
 
 ¡Hola equipo! En este proyecto hemos configurado herramientas profesionales del mundo real para automatizar la revisión y publicación de nuestro código. A esto se le conoce como **CI/CD** (Integración Continua y Despliegue Continuo).
 
@@ -40,6 +40,7 @@ Para que GitHub Actions pueda publicar la imagen a tu nombre en Docker Hub, nece
 3. En el menú selecciona **Personal access tokens**.
 4. Haz clic en **New Access Token**.
 5. Ponle una descripción fácil de recordar, como `Permisos-GitHub-Actions`.
+6. ⚠️ **¡MUY IMPORTANTE!** En la sección de **Access permissions** (Permisos de acceso), debes asegurarte de asignarle como mínimo **Read, Write**. (Si lo dejas solo en Read-Only, el proceso fallará porque el robot no tendrá permiso para subir la imagen a tu cuenta).
 7. Al crearlo, te mostrará una contraseña súper larga (empieza por `dckr_pat_...`). **¡Cópiala y guárdala!** Solo te la mostrará una vez.
 
 ### Paso 2: Guardar los Secretos en GitHub de manera segura
