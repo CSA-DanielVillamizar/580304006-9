@@ -31,8 +31,10 @@ namespace GestionITM.Tests
                 .Setup(m => m.Map<Profesor>(It.IsAny<ProfesorCreateDto>()))
                 .Returns(new Profesor());
 
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ProfesorService>>();
+
             // Instanciamos el servicio REAL, pero le inyectamos los mocks en lugar de las implementaciones reales
-            var profesorService = new ProfesorService(mockRepository.Object, mockMapper.Object);
+            var profesorService = new ProfesorService(mockRepository.Object, mockMapper.Object, mockLogger.Object);
 
             // Preparamos unos datos errados a propósito para probar la validación
 
@@ -65,7 +67,8 @@ Assert.False(resultado);
                 .Setup(m => m.Map<Profesor>(It.IsAny<ProfesorCreateDto>()))
                 .Returns(new Profesor());
 
-            var profesorService = new ProfesorService(mockRepository.Object, mockMapper.Object);
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ProfesorService>>();
+            var profesorService = new ProfesorService(mockRepository.Object, mockMapper.Object, mockLogger.Object);
             var dtobien = new ProfesorCreateDto
             {
                 Nombre = "Ana",

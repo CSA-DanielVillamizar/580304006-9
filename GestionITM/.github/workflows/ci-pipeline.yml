@@ -1,0 +1,44 @@
+# 1.¿¨CÓMO SE LLAMA NUESTRO ROBOT?
+name: Integración Continua Nivel 5
+
+# 2. ¿CUÁNDO SE DESPIERTA NUESTRO ROBOT?
+on:
+  push:
+    branches: [ "main", "master" ] # Se activa si alguien hace push a la rama main o master
+  pull_request:
+    branches: [ "main", "master" ] # Se activa  si alguien pide unir su código a la rama main o master
+
+# 3. ¿QUÉ TRABAJOS (JOBS) REALIZA NUESTRO ROBOT?
+jobs:
+  build-and-test:
+    # 4. ¿QUÉ COMPUTADOR LE PEDIIMOS PRESTADO A GITHUB PARA QUE EJECUTE NUESTRO ROBOT?
+    runs-on: ubuntu-latest # Pedimos un servidor con el sistema operativo Ubuntu nuevecito y en blanco
+
+    # 5. LOS PASOS DE LA RECETA DE CÓMO SE PREPARA NUESTRO ROBOT PARA HACER SU TRABAJO
+    steps:
+
+    # Paso A: Descargar nuestro código al servidor prestado por GitHub
+    - name: Descargar código fuente
+      uses: actions/checkout@v4 # Usamos la acción de GitHub para descargar el código
+
+    # Paso B: Instalar el SDK de C# .NET 8 en el servidor prestado por GitHub
+    - name: Instalar .NET 8
+      uses: actions/setup-dotnet@v4 # Usamos la acción de GitHub para instalar el SDK de .NET
+      with:
+        dotnet-version: '8.0.x' # Especificamos que queremos la versión 8.0 del SDK
+
+    # Paso C: Descargar los Nugets (Entity Framework Core, Automapper, etc.) necesarios para compilar nuestro código
+    - name: Restaurar dependencias
+      run: dotnet restore # Ejecutamos el comando para restaurar las dependencias del proyecto
+
+    # Paso D: Compilar nuestro código para asegurarnos de que no hay errores de compilación o sintaxis
+    - name: Compilar código
+      run: dotnet build --configuration Release --no-restore # Compilamos el código sin restaurar dependencias (ya lo hicimos en el paso anterior)
+
+    # Paso E: El detector de mentiras de nuestro robot: Ejecutar las pruebas unitarias para asegurarnos de que nuestro código funciona correctamente
+    - name: Ejecutar pruebas unitarias
+      run: dotnet test --configuration Release --no-build --verbosity normal # Ejecutamos las pruebas unitarias sin compilar (ya lo hicimos en el paso anterior)  
+
+    # Paso F: (Bonus Nivel 5) Construir el contenedor de Docker para asegurarnos de que nuestro código se puede ejecutar en un entorno de producción
+    - name: Validar construcción de imagen de Docker
+      run: docker build -t gestion-itm-api:latest -f src/Api/Dockerfile . # Construimos la imagen de Docker usando el Dockerfile en el directorio actual
