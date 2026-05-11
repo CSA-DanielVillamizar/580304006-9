@@ -40,7 +40,7 @@ Para que GitHub Actions pueda publicar la imagen a tu nombre en Docker Hub, nece
 3. En el menú selecciona **Personal access tokens**.
 4. Haz clic en **New Access Token**.
 5. Ponle una descripción fácil de recordar, como `Permisos-GitHub-Actions`.
-6. Al crearlo, te mostrará una contraseña súper larga (empieza por `dckr_pat_...`). **¡Cópiala y guárdala!** Solo te la mostrará una vez.
+7. Al crearlo, te mostrará una contraseña súper larga (empieza por `dckr_pat_...`). **¡Cópiala y guárdala!** Solo te la mostrará una vez.
 
 ### Paso 2: Guardar los Secretos en GitHub de manera segura
 1. Ve a la página principal de tu repositorio en [GitHub.com].
