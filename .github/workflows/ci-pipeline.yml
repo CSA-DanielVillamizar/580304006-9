@@ -9,6 +9,9 @@ on:
     branches: [ "main", "master" ] # Se activa  si alguien pide unir su código a la rama main o master
 
 # 3. ¿QUÉ TRABAJOS (JOBS) REALIZA NUESTRO ROBOT?
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-test:
     # 4. ¿QUÉ COMPUTADOR LE PEDIIMOS PRESTADO A GITHUB PARA QUE EJECUTE NUESTRO ROBOT?
