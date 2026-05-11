@@ -46,13 +46,11 @@ namespace GestionITM.Tests
 
                 };
 
-            // 2. Act (Ejecutar la acción que queremos probar)
+            // 2. Act & Assert (Ejecutar la acción y exgir que lance excepción)
 
-// Exigimos (Assert) que al ejecutar (Act) el método,el sistema DEBE lanzar un error.
-// En esta implementación, cuando la especialidad está vacía el servicio devuelve false
-// y no lanza excepción. Probamos ese comportamiento explícitamente.
-var resultado = await profesorService.RegistrarProfesorAsync(dtomalo);
-Assert.False(resultado);
+            // Exigimos (Assert) que al ejecutar (Act) el método, el sistema DEBE lanzar una excepción con mensaje "Especialidad vacía"
+            var excepcion = await Assert.ThrowsAsync<Exception>(() => profesorService.RegistrarProfesorAsync(dtomalo));
+            Assert.Equal("Especialidad vacía", excepcion.Message);
         }
 
         // Prueba 2 : El camino feliz (Validar que funcione cuando debe funcionar)

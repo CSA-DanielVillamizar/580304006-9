@@ -9,6 +9,9 @@ on:
     branches: [ "main", "master" ] # Se activa  si alguien pide unir su código a la rama main o master
 
 # 3. ¿QUÉ TRABAJOS (JOBS) REALIZA NUESTRO ROBOT?
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-test:
     # 4. ¿QUÉ COMPUTADOR LE PEDIIMOS PRESTADO A GITHUB PARA QUE EJECUTE NUESTRO ROBOT?
@@ -29,16 +32,16 @@ jobs:
 
     # Paso C: Descargar los Nugets (Entity Framework Core, Automapper, etc.) necesarios para compilar nuestro código
     - name: Restaurar dependencias
-      run: dotnet restore # Ejecutamos el comando para restaurar las dependencias del proyecto
+      run: dotnet restore GestionITM/GestionITM.slnx # Ejecutamos el comando para restaurar las dependencias del proyecto
 
     # Paso D: Compilar nuestro código para asegurarnos de que no hay errores de compilación o sintaxis
     - name: Compilar código
-      run: dotnet build --configuration Release --no-restore # Compilamos el código sin restaurar dependencias (ya lo hicimos en el paso anterior)
+      run: dotnet build GestionITM/GestionITM.slnx --configuration Release --no-restore # Compilamos el código sin restaurar dependencias (ya lo hicimos en el paso anterior)
 
     # Paso E: El detector de mentiras de nuestro robot: Ejecutar las pruebas unitarias para asegurarnos de que nuestro código funciona correctamente
     - name: Ejecutar pruebas unitarias
-      run: dotnet test --configuration Release --no-build --verbosity normal # Ejecutamos las pruebas unitarias sin compilar (ya lo hicimos en el paso anterior)  
+      run: dotnet test GestionITM/GestionITM.slnx --configuration Release --no-build --verbosity normal # Ejecutamos las pruebas unitarias sin compilar (ya lo hicimos en el paso anterior)  
 
     # Paso F: (Bonus Nivel 5) Construir el contenedor de Docker para asegurarnos de que nuestro código se puede ejecutar en un entorno de producción
     - name: Validar construcción de imagen de Docker
-      run: docker build -t gestion-itm-api:latest -f src/Api/Dockerfile . # Construimos la imagen de Docker usando el Dockerfile en el directorio actual
+      run: docker build -t gestion-itm-api:latest -f GestionITM/Dockerfile GestionITM/ # Construimos la imagen de Docker usando el Dockerfile de la raíz del proyecto # Construimos la imagen de Docker usando el Dockerfile en el directorio actual
